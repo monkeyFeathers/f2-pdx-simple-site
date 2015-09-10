@@ -3,13 +3,13 @@ var course = {
     "level": 201, 
     "name": "Foundations II: JavaScript", 
     "lectures": [
-    lecture1 = {"topic": ""}, lecture2 = {"topic": ""},
-    lecture3 = {"topic": ""}, lecture4 = {"topic": ""}, 
-    lecture5 = {"topic": ""}, lecture6 = {"topic": ""}, 
-    lecture7 = {"topic": ""}, lecture8 = {"topic": ""}
+    {"topic": "1"}, {"topic": "2"},
+    {"topic": "3"}, {"topic": "4"},
+    {"topic": "5"}, {"topic": "6"},
+    {"topic": "7"}, {"topic": "8"}
     ],
-    "labs": [lab1 = {"topic": ""}, lab2 = {"topic": ""},
-    lab3 = {"topic": ""}, lab4 = {"topic": ""}]
+    "labs": [{"topic": "1"}, {"topic": "2"},
+    {"topic": "3"}, {"topic": "4"}]
 }
 
 
