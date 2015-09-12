@@ -13,5 +13,8 @@
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.0",
     "grunt-jscs": "^1.5.0"
+  },
+  "scripts" : {
+    "server": "node server.js"
   }
 }

@@ -1,6 +1,8 @@
+
 var express = require("express");
 var app = express(); 
 var port = process.env.PORT || 3000; 
+
 
 var course = {
     "level": 201, 
@@ -22,11 +24,15 @@ function getRandomThingy(thingiesArray) {
 var retval = "string"
 
 app.listen(port, function() { 
-    console.log('server started on port' + port) 
+    console.log("server started on port " + port + "; Ctrl C to stop.") 
 });
 
+app.use(express.static(__dirname+"/app/"));
+
 app.get("/", function(req, res){
-	res.send("hello anna and javier! and pizza <h1> hello! </h1>");
+	res.sendFile();
+
+    //res.send("hello anna and javier! and pizza <h1> hello! </h1>");
 });
 
 app.get("/annas_awesome_site_page", function(req, res){
