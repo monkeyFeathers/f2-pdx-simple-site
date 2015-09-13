@@ -1,17 +1,25 @@
-var course = {
-  level: 201,
-  name: "Foundations 2: JavaScript",
-  lectures:[ 
-    {topic: "Paperwork, SetupPreview the documentView in a new window & Javascript Basics (Part 1)"},
-    {topic: "JavaScript Basics (Part 2) & Intro to Node"},
-    {topic: "Array Methods, Functions & Scope/Hoisting"},
-    {topic: "OOP in JavaScript and Classes/Inheritance"},
-    {topic: "JavaScript in the Browser & Intro to jQuery"},
-    {topic: "Building a Server & Using Ajax"},
-    {topic: "Build & Deploy an App"},
-    {topic: "Functional Programming with lodash"}],
-  labs: [{topic:"zoo animals"},{topic:"monsters, aliens and sorting"}]
-}
+// $(function(){
+//   $("button").on('click',function(e){
+    
+//     alert(e.type);
+//   });
+
+
+// });
+// var course = {
+//   level: 201,
+//   name: "Foundations 2: JavaScript",
+//   lectures:[ 
+//     {topic: "Paperwork, SetupPreview the documentView in a new window & Javascript Basics (Part 1)"},
+//     {topic: "JavaScript Basics (Part 2) & Intro to Node"},
+//     {topic: "Array Methods, Functions & Scope/Hoisting"},
+//     {topic: "OOP in JavaScript and Classes/Inheritance"},
+//     {topic: "JavaScript in the Browser & Intro to jQuery"},
+//     {topic: "Building a Server & Using Ajax"},
+//     {topic: "Build & Deploy an App"},
+//     {topic: "Functional Programming with lodash"}],
+//   labs: [{topic:"zoo animals"},{topic:"monsters, aliens and sorting"}]
+// }
 
 // //
 // // Example 1: getElementsByTagName()

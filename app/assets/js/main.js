@@ -1,16 +1,39 @@
 //
-var course = {
-    "level": 201, 
-    "name": "Foundations II: JavaScript", 
-    "lectures": [
-    {"topic": "1"}, {"topic": "2"},
-    {"topic": "3"}, {"topic": "4"},
-    {"topic": "5"}, {"topic": "6"},
-    {"topic": "7"}, {"topic": "8"}
-    ],
-    "labs": [{"topic": "1"}, {"topic": "2"},
-    {"topic": "3"}, {"topic": "4"}]
-}
+$(function(){
+  $("button").on('click',function(e){
+      switch ($(this).attr('id')) {
+        case 'labsButton':
+            $.get('/labs',function(data){
+                $("#labList").html(makeList(data, 'labs'));
+            });
+            
+            break;
+        case 'lecturesButton':
+            $.get('/lectures',function(data){
+                $("#lectureList").html(makeList(data, 'lectures'));
+            });
+            break;
+      }
+    });
+  function makeList(objectArray, type){
+    var outputString = '<ol>';
+    objectArray.forEach(function(obj){
+        outputString += '<li><a href="/' + type + '/' + objectArray.indexOf(obj) + '">' + obj.title + '</a></li>'
+    });
+    outputString += "</ol>"
+    return outputString;
+  }
+  $(".content").click(function(e){
+    e.preventDefault();
+    var trigger = $(e.target);
+    var type = trigger.parent().parent().parent().attr('id').split('List')[0];
+    $.get(trigger.attr('href'), function(data){
+        var string = "<h3>" + data.title + "</h3><p>"+data.topic+"</p>"
+        $("#"+type+"Description").html(string);
+    });
+  })
+
+});
 
 
 // Example 1: getElementsByTagName()

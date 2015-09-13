@@ -1,18 +1,27 @@
 <html>
   <head>
-    <title>?</title>
+    <title>Foundations 2 Javascript Course Info</title>
 
-    <!-- <link rel="stylesheet" type="text/css" href="?" /> -->
+    <!--<link rel="stylesheet" type="text/css" href="./assets/css/main.css" />-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   </head>
   <body>
-    <h2>Lectures</h2>
-    <button type="button">Get Lectures</button>
-    <div></div>
-    <h2> Labs </h2>
-    <button type="button">Get Lectures</button>
-    <div></div>
-
- <!--    <h1>Foundations 2: JavaScript &mdash; Lab Summary</h1>
+    <div class="container">
+      <div class="row">
+        <button id="lecturesButton" class="btn btn-default">Get Lectures</button>
+        <button id="labsButton" class="btn btn-default">Get Labs</button>
+      </div>
+    <div class="row">
+    <div id="lectures" class="content">
+      <div id="lectureList" class="col-md-4"></div>
+      <div id="lectureDescription" class="col-md-4"></div>
+    </div>
+    <div id="labs" class="content">
+      <div id="labList" class="col-md-4"></div>
+      <div id="labDescription" class="col-md-4"></div>
+    </div>
+  </div>
+<!--    <h1>Foundations 2: JavaScript &mdash; Lab Summary</h1>
     <ul id="buttons">
       <li> <button>Lab 1: Assertions About Zoo Animals</button> </li>
       <li> <button>Lab 1: Translating Meerkats</button> </li>
@@ -31,14 +40,15 @@
         <img src="./assets/img/blob.jpg">
         <span>Lab 2: Blob Consumption Rates</span>
       </li>
-    </ul> -->
+    </ul>
 
     <script>
+
     </script>
 
     <!-- include jQuery here -->
-    <!-- <script src="./assets/lib/jquery-1.11.3.min.js"></script> -->
+    <script src="./assets/lib/jquery-1.11.3.min.js"></script>
     <!-- include your external js file here -->
-    <!-- <script src="?" type="text/javascript"></script> -->
+    <script src="./assets/js/main.js" type="text/javascript"></script>
   </body>
 </html>
