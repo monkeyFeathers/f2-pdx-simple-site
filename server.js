@@ -24,6 +24,7 @@ var course = {
         {title: "lab 4", "topic": "Pizza"}
     ]
 }
+var yodaQuotes = ["Do or do not. There is no try.", "My ally is the force.", "Slimy!? Mudhole!? My home this is!", "Wars not make one great."]
 
 function getRandomThingy(thingiesArray) {
 	return thingiesArray[Math.floor(Math.random() * thingiesArray.length)]
@@ -55,7 +56,18 @@ app.get('/:type', function (req, res){
         case 'lectures':
             res.json(course.lectures);
             break;
-            default:
+        case 'random':
+            var responseItem = getRandomItem()
+            switch (typeof responseItem) {
+                case 'string':
+                    res.send(responseItem);
+                    break;
+                case 'object':
+                    res.json(responseItem);
+                    break
+            }
+            break;
+        default:
             res.status(404).send("404 not Found");
     }
 });
@@ -72,6 +84,21 @@ app.get('/:type/:id', function (req, res) {
     }
 
 });
+
+function getRandomItem() {
+    switch (Math.floor(Math.random()*3)) {
+        case 0:
+            return selectRandomItem(course.lectures);
+        case 1:
+            return selectRandomItem(course.labs);
+        case 2:
+            return selectRandomItem(yodaQuotes);
+    }
+
+}
+function selectRandomItem(array) {
+    return array[Math.floor(Math.random()*array.length)]
+}
 // app.get("/lectures", function(req, res){
 // 	res.json(getRandomThingy(course.lectures).topic);
 // });

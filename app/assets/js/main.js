@@ -1,37 +1,65 @@
 //
 $(function(){
+
+  // click handler for 
   $("button").on('click',function(e){
       switch ($(this).attr('id')) {
         case 'labsButton':
-            $.get('/labs',function(data){
-                $("#labList").html(makeList(data, 'labs'));
-            });
-            
+            getCourseInfo('labs');
             break;
         case 'lecturesButton':
-            $.get('/lectures',function(data){
-                $("#lectureList").html(makeList(data, 'lectures'));
-            });
-            break;
+          getCourseInfo('lectures');
+          break;
+        case 'randomButton':
+          $.get('/random', function(data){
+            createContentPanel("#randomDescription",data);
+          });
+
+          break;
       }
     });
-  function makeList(objectArray, type){
-    var outputString = '<ol>';
-    objectArray.forEach(function(obj){
-        outputString += '<li><a href="/' + type + '/' + objectArray.indexOf(obj) + '">' + obj.title + '</a></li>'
-    });
-    outputString += "</ol>"
-    return outputString;
-  }
+  // click handler for list items created from course info lists
   $(".content").click(function(e){
     e.preventDefault();
     var trigger = $(e.target);
-    var type = trigger.parent().parent().parent().attr('id').split('List')[0];
-    $.get(trigger.attr('href'), function(data){
-        var string = "<h3>" + data.title + "</h3><p>"+data.topic+"</p>"
-        $("#"+type+"Description").html(string);
+    if (trigger.is('a') ) {
+      // determine from the div enclosing the ul what type of thing we're dealing with
+      // probably should rewrite this to work with a 'data-' attribute on the 'a'
+      var enclosingDiv = '#' + trigger.parent().parent().parent().attr('id').split('List')[0]  + "Description";
+        $.get(trigger.attr('href'), function(data){
+          createContentPanel(enclosingDiv, data);
+        });
+      }
+  });
+
+  // helper methods for click handlers
+  function getCourseInfo(courseInfoType){
+    $.get('/' + courseInfoType, function(data){
+      $("#" + courseInfoType + "List").html(makeList(data, courseInfoType));
     });
-  })
+  }
+
+  function makeList(objectArray, type){
+    var outputString = '<ul class="nav nav-pills">';
+    objectArray.forEach(function(obj){
+        outputString += '<li><a href="/' + type + '/' + objectArray.indexOf(obj) + '">' + obj.title + '</a></li>'
+    });
+    outputString += "</ul>"
+    return outputString;
+  }
+
+  function createContentPanel (enclosingDiv, data) {
+    switch (typeof data) {
+      case 'string':
+        var string = '<h3 class="panel-header">' + data + "</h3><p>-- Master Yoda</p>";
+        $(enclosingDiv).html(string);
+        break;
+      case 'object':
+        var string = '<h3 class="panel-header">' + data.title + "</h3><p>"+data.topic+"</p>";
+        $(enclosingDiv).html(string);
+        break;
+    }
+  }
 
 });
 

@@ -7,20 +7,38 @@
   </head>
   <body>
     <div class="container">
-      <div class="row">
-        <button id="lecturesButton" class="btn btn-default">Get Lectures</button>
-        <button id="labsButton" class="btn btn-default">Get Labs</button>
+      <div class="row"><h2>Foundations 2: Javascript -- Labs and Lectures</h2></div> 
+      <div id="lectures" class="content">
+        <div class="row">
+          <button id="lecturesButton" class="btn btn-default">Get Lectures</button>
+        </div>
+          <div class="row">
+            <div id="lecturesList" class="col-md-8"></div>
+          </div>
+          <div class="row">
+            <div id="lecturesDescription" class="panel panel-default col-md-4"></div>
+          </div> 
+        </div>
+      <div id="labs" class="content">
+        <div class="row">
+          <button id="labsButton" class="btn btn-default">Get Labs</button>
+        </div>
+        <div class="row"> 
+          <div id="labsList" class="col-md-8"></div>
+        </div>
+        <div class="row">
+          <div id="labsDescription" class="panel panel-default col-md-4"></div>
+        </div>
       </div>
-    <div class="row">
-    <div id="lectures" class="content">
-      <div id="lectureList" class="col-md-4"></div>
-      <div id="lectureDescription" class="col-md-4"></div>
+      <div id="random" class="content">
+        <div class="row">
+          <button id="randomButton" class="btn btn-default">Get Random</button>
+        </div>
+        <div class="row">
+          <div id="randomDescription" class="panel panel-default col-md-4"></div>
+        </div>
+      </div>
     </div>
-    <div id="labs" class="content">
-      <div id="labList" class="col-md-4"></div>
-      <div id="labDescription" class="col-md-4"></div>
-    </div>
-  </div>
 <!--    <h1>Foundations 2: JavaScript &mdash; Lab Summary</h1>
     <ul id="buttons">
       <li> <button>Lab 1: Assertions About Zoo Animals</button> </li>
