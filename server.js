@@ -1,107 +1,115 @@
+var express = require('express');
+var app = express();
+var port = process.env.PORT || 5678;
+var bodyparser = require("body-parser");
 
-var express = require("express");
-var app = express(); 
-var port = process.env.PORT || 3000; 
+app.use(bodyparser.json());
 
+app.use(bodyparser.urlencoded({extended: true}));
+
+app.use(express.static(__dirname + '/app/'));
 
 var course = {
-    "level": 201, 
-    "name": "Foundations II: JavaScript", 
-    "lectures": [ 
-        {title: "lecture 1", topic: "Paperwork, SetupPreview the documentView in a new window & Javascript Basics (Part 1)"},
-        {title: "lecture 2", topic: "JavaScript Basics (Part 2) & Intro to Node"},
-        {title: "lecture 3", topic: "Array Methods, Functions & Scope/Hoisting"},
-        {title: "lecture 4", topic: "OOP in JavaScript and Classes/Inheritance"},
-        {title: "lecture 5", topic: "JavaScript in the Browser & Intro to jQuery"},
-        {title: "lecture 6", topic: "Building a Server & Using Ajax"},
-        {title: "lecture 7", topic: "Build & Deploy an App"},
-        {title: "lecture 8", topic: "Functional Programming with lodash"}
-    ],
-    "labs": [
-        {title: "lab 1", "topic": "Zoo Animals"}, 
-        {title: "lab 2", "topic": "Blobs, Aliens and Sorting"},
-        {title: "lab 3", "topic": "???"},
-        {title: "lab 4", "topic": "Pizza"}
-    ]
-}
-var yodaQuotes = ["Do or do not. There is no try.", "My ally is the force.", "Slimy!? Mudhole!? My home this is!", "Wars not make one great."]
+  level: 201,
+  name: 'Foundations 2: JavaScript',
+  lectures: [
+    { "topic": "Intro, Basics 1",
+      "notes": [ "The primitive data types are Boolean, Null, Undefined, Number, and String.",
+                 "Parameters become variables inside their function.",
+                 "A method is a function that is also the value of an object property."
+               ]
+    },
+    { "topic": "Basics 2",
+      "notes": [ "Logical operators return the result of the last expression evaluated.",
+                 "Loops execute the same instructions multiple times.",
+                 "An infinite loop is a loop that never satisfies its exit condition."
+               ]
+    },
+    { "topic": "Array Methods, Functions, Scope",
+      "notes": [ "join() takes a delimiter, returns a string.",
+                 "Generally useful code is often packaged up as a collection of functions and data in libraries.",
+                 "JavaScript is function-scoped."
+               ] },
+    { "topic": "Object Oriented Programming" },
+    { "topic": "JavaScript in the Browser" },
+    { "topic": "Node.js and Express" },
+    { "topic": "Workshop" },
+    { "topic": "lodash" }
+  ],
+  labs: [
+    { "topic": "Basics" },
+    { "topic": "Object Oriented Programming"},
+    { "topic": "Project"}
+  ]
+};
 
-function getRandomThingy(thingiesArray) {
-	return thingiesArray[Math.floor(Math.random() * thingiesArray.length)]
-}
+function findPhrase(phrase) {
+  var notes = [];
 
-var retval = "string"
-
-app.listen(port, function() { 
-    console.log("server started on port " + port + "; Ctrl C to stop.") 
-});
-
-app.use(express.static(__dirname+"/app/"));
-
-app.get("/", function(req, res){
-	res.sendFile();
-
-    //res.send("hello anna and javier! and pizza <h1> hello! </h1>");
-});
-
-app.get("/annas_awesome_site_page", function(req, res){
-    res.send("This is the best page EVAR! so 1334!");
-})
-app.get('/:type', function (req, res){
-
-    switch (req.params.type) {
-        case 'labs':
-            res.json(course.labs);
-            break;
-        case 'lectures':
-            res.json(course.lectures);
-            break;
-        case 'random':
-            var responseItem = getRandomItem()
-            switch (typeof responseItem) {
-                case 'string':
-                    res.send(responseItem);
-                    break;
-                case 'object':
-                    res.json(responseItem);
-                    break
-            }
-            break;
-        default:
-            res.status(404).send("404 not Found");
+  for (var i = 0; i < course.lectures.length; i++) {
+  //   // TODO: Use the same code we implemented on the front end to check
+  //   //       that we have notes and that "notes" is an array.
+    if (course.lectures[i].notes && course.lectures[i].notes.constructor === Array) {
+      for (var j = 0; j < course.lectures[i].notes.length; j++) {
+  //       // TODO: First, check whether this notes string contains our phrase.
+  //       // Hint: A good string method is indexOf().
+        if (course.lectures[i].notes[j].match(phrase)) {
+          notes.push(course.lectures[i].notes[j]);
+        }
+      }
     }
+  }
+
+
+  notes = searchCourseSection('lectures', phrase);
+  notes.concat(searchCourseSection('labs', phrase));
+  results =  { notes: notes };
+
+  // TODO: We need to do the same thing for labs that we did for
+  //       lectures. Can you convert the loop into a function
+  //       that accepts 2 parameters: section and phrase,
+  //       and lets us search either lectures or labs?
+
+  // Delete these 2 lines
+  // results.lectures = course.lectures;
+  // results.labs = course.labs;
+  return results;
+
+  };
+
+app.post('/search', function(req, res) {
+
+
+// TODO: Instead of app.get(), we want to follow the same pattern using app.post().
+//       Surround the following lines of code with app.post() and make sure to
+//       call your endpoint "search".
+
+
+// TODO: Once you've surrounded this code with app.post(),
+//       we need to unpack our search phrase from req.body.
+//       Instead of the question marks, specify the name of the
+//       parameter that contains our search text.
+  var searchResults = findPhrase(req.body.searchText);
+  res.json(searchResults);
 });
-app.get('/:type/:id', function (req, res) {
-    switch(req.params.type){
-        case 'labs':
-            res.send(course.labs[req.params.id])
-            break;
-        case 'lectures':
-            res.send(course.lectures[req.params.id])
-            break;
-        default:
-            res.status(404).send('404 not found');
-    }
 
+
+app.get('/lectures', function (req, res) {
+  res.json(course.lectures);
 });
 
-function getRandomItem() {
-    switch (Math.floor(Math.random()*3)) {
-        case 0:
-            return selectRandomItem(course.lectures);
-        case 1:
-            return selectRandomItem(course.labs);
-        case 2:
-            return selectRandomItem(yodaQuotes);
-    }
+app.get('/labs', function (req, res) {
+  res.json(course.labs);
+});
 
-}
-function selectRandomItem(array) {
-    return array[Math.floor(Math.random()*array.length)]
-}
-// app.get("/lectures", function(req, res){
-// 	res.json(getRandomThingy(course.lectures).topic);
-// });
-// app.get("/labs",function(req, res){
-// 	res.send("<h1>Random Labs</h1><h2>The lab you got was: "+getRandomThingy(course.labs).topic+"</h2>");
-// });
+app.get('/course_name', function (req, res) {
+  res.json(course.name);
+});
+
+app.get('/', function (req, res) {
+  res.sendFile();
+});
+
+app.listen(port, function () {
+  console.log('server started on port ' + port);
+});

@@ -1,164 +1,85 @@
-//
-$(function(){
+$(function () {
+  // Let's use a class instead of the button element.
+  // This will make our code more reusable and compatible.
+  // It will also improve performance on the front end
+  // because the browser looks for CSS selectors by
+  // narrowing the search left to right.
+  $('.get-info').click(function () {
+    var section = $(this).attr('id');
 
-  // click handler for 
-  $("button").on('click',function(e){
-      switch ($(this).attr('id')) {
-        case 'labsButton':
-            getCourseInfo('labs');
-            break;
-        case 'lecturesButton':
-          getCourseInfo('lectures');
-          break;
-        case 'randomButton':
-          $.get('/random', function(data){
-            createContentPanel("#randomDescription",data);
-          });
-
-          break;
-      }
+    $.get("http://localhost:3000/" + section, function (response) {
+      $("#show-" + section).text(response[0].topic);
     });
-  // click handler for list items created from course info lists
-  $(".content").click(function(e){
-    e.preventDefault();
-    var trigger = $(e.target);
-    if (trigger.is('a') ) {
-      // determine from the div enclosing the ul what type of thing we're dealing with
-      // probably should rewrite this to work with a 'data-' attribute on the 'a'
-      var enclosingDiv = '#' + trigger.parent().parent().parent().attr('id').split('List')[0]  + "Description";
-        $.get(trigger.attr('href'), function(data){
-          createContentPanel(enclosingDiv, data);
-        });
-      }
   });
 
-  // helper methods for click handlers
-  function getCourseInfo(courseInfoType){
-    $.get('/' + courseInfoType, function(data){
-      $("#" + courseInfoType + "List").html(makeList(data, courseInfoType));
-    });
-  }
+  // Code Challenge 1:
+  // When the user clicks the "Find It" button,
+  // let's get back all the Lectures notes and display them.
+  $("#search").on("submit", function(e) {
+    // TODO: Prevent the form from submitting the default way.
+    e.preventDefault();
+    // TODO: Get the value of the input text box with name="searchText"
+    //       and assign the value into a variable called searchText.
+    // Hint: Look up the CSS selector to find an input by its "name"
+    // Hint: Use the jQuery method .val() to get the value of an input
+    var searchText = $('input[name=searchText]').val();
+    var lucky = $('input[name=lucky]').is(':checked');
+    var data = {searchText: searchText, lucky: lucky};
+    // TODO: What's the URL of the endpoint we're going to hit?
+    var url = 'http://localhost:5678/search';
 
-  function makeList(objectArray, type){
-    var outputString = '<ul class="nav nav-pills">';
-    objectArray.forEach(function(obj){
-        outputString += '<li><a href="/' + type + '/' + objectArray.indexOf(obj) + '">' + obj.title + '</a></li>'
-    });
-    outputString += "</ul>"
-    return outputString;
-  }
+    console.log(data); // this will be a sanity check to see that we're getting the data
+    var rawResponse;
+    $.post(url, data, function(response) {
+      var lectures,
+          output = '';
 
-  function createContentPanel (enclosingDiv, data) {
-    switch (typeof data) {
-      case 'string':
-        var string = '<h3 class="panel-header">' + data + "</h3><p>-- Master Yoda</p>";
-        $(enclosingDiv).html(string);
-        break;
-      case 'object':
-        var string = '<h3 class="panel-header">' + data.title + "</h3><p>"+data.topic+"</p>";
-        $(enclosingDiv).html(string);
-        break;
-    }
-  }
+      // TODO: Get the lectures property from the response object and
+      //       assign it into the lectures variable.
+      lectures = response.lectures;
+      for (var i = 0; i < lectures.length; i++) {
+        // Now we need to make sure we have a notes object,
+        // and that it's an array, before we try iterating over it.
+      //   if (lectures[i].notes && lectures[i].notes.constructor === Array) {
+      //     for (var j = 0; j < lectures[i].notes.length; j++) {
+      //       // TODO: Each element in the lectures array contains an object.
+      //       //       We're checking to see that the object's notes property
+      //       //       is an object, and if so, we're unpacking all the notes.
+      //       //       We want to concatenate the notes to the output variable,
+      //       //       surrounded by <li></li> tags. Finish the next line:
+      //       output += '<li>' + lectures[i].notes[j] + '</li>';
+      //     }
+      //   }
+      // }
+      // output = '<ul>' + output + '</ul>';
+
+        if (response.notes && response.notes.constructor === Array) {
+          for (var i = 0; i < response.notes.length; i++) {
+            output += '<li>' + response.notes[i] + '</li>';
+          }
+        }
+
+        // TODO: What div are we putting our results into?
+        //       Which variable shows our unordered list?
+      }
+      $("#search-results").html(output);
+    });
+  });
+
+      for (var i = 0; i < lectures.length; i++) {
+        if (typeof lectures[i].notes === 'object') {
+          for (var j = 0; j < lectures[i].notes.length; j++) {
+            output += '<li>' + lectures[i].notes[j] + '</li>';
+          }
+        }
+      }
+
+
+  // Done with Code Challenge 1 early? Next steps:
+  // 1. First, use your browser console tools to watch your Ajax
+  //    request and response. Open the "Network" tab and hit the search
+  //    button a few times. Use different values in your search box.
+  // 2. Still want more? Try using a jQuery iterator to loop over the results
+  //    you get back from the server, instead of using a for loop.
 
 });
-
-
-// Example 1: getElementsByTagName()
-//
-// Vanilla JS Task:
-//        Using JavaScript, add a descriptive page title.
-
-
-//
-// Example 2: getElementById()
-//
-// Vanilla JS Task:
-//       Use getElementById to add a style attribute to the <ul>
-//       that removes the bullets to the left of the images.
-//
-// Resources:
-// https://developer.mozilla.org/en-US/docs/Web/API/Element.setAttribute
-// https://developer.mozilla.org/en-US/docs/Web/CSS/list-style-type
-//
-
-
-// Alternate:
-// picsUl.setAttribute("style", "list-style-type: none;");
-
-//
-// Example 3: querySelectorAll()
-//
-// Vanilla JS Task:
-//       Make the images all have a maximum width of 200px.
-//
-
-
-//
-// Example 4: querySelector() + createElement() + appendChild()
-//
-// Vanilla JS Task:
-//       Find another picture to illustrate one of the labs.
-//       Use JavaScript to add a new <li> element in your existing <ul>.
-//       Then add a new <img> element to the <li> and specify its src.
-//       You can use the URL of the image you found as the src,
-//       or you can download the new image to your assets/img folder.
-//
-// You’ll need: document.createElement() and element.appendChild()
-//
-
-
-//
-// Example 5: window.addEventListener("load")
-//
-// Vanilla JS Task:
-//        Open an alert dialog on page load to welcome the user to the page.
-//
-
-//
-// Example 6: Handling the resize event
-//
-//            resize = An event on the window object.
-//            Signifies the user changed the viewing dimensions.
-//            Use it to implement "responsive design": adjust layout, styling, and element visibility.
-//
-// Vanilla JS Task:
-//        Make the images half the window width each time the resize event triggers.
-//
-// You’ll need: window.innerWidth and window.innerHeight
-//
-
-
-//
-// jQuery Task:
-//        Repeat the previous task, this time using jQuery.
-//
-// You'll need: $(window).on()
-//              $(window).width()
-//              $(element).height(desiredHeight)
-
-
-//
-// Example 7: Handling a click event
-//
-//            click = An event on a DOM element.
-//            Signifies the user clicked that element with a mouse or trackpad.
-//            Use it to interact with the user: open a menu,respond to a button-click, etc.
-//
-// Vanilla JS Task:
-//        Every time an image is clicked, move it to the end of the <ul>.
-//
-// You’ll need: event.target.parentNode
-//              element.remove()
-//              element.appendChild()
-//
-
-//
-// jQuery Task:
-//        Repeat the previous task, this time using jQuery.
-
-//
-// jQuery Task:
-//       Hide all the lab images on page load.
-//       When a button is clicked, show the corresponding list item (and only that list item)
-//
