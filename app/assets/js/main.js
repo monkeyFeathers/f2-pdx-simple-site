@@ -1,72 +1,151 @@
 $(function () {
-  // Let's use a class instead of the button element.
-  // This will make our code more reusable and compatible.
-  // It will also improve performance on the front end
-  // because the browser looks for CSS selectors by
-  // narrowing the search left to right.
-  $('.get-info').click(function () {
-    var section = $(this).attr('id');
-
-    $.get("http://localhost:3000/" + section, function (response) {
-      $("#show-" + section).text(response[0].topic);
-    });
-  });
-
-  // Code Challenge 1:
-  // When the user clicks the "Find It" button,
-  // let's get back all the Lectures notes and display them.
-  $("#search").on("submit", function(e) {
-    // TODO: Prevent the form from submitting the default way.
+  // Menu Button click handler
+  $(".getCourseInfo").on('click',function(e){
     e.preventDefault();
 
-    // TODO: Get the value of the input text box with name="searchText"
-    //       and assign the value into a variable called searchText.
-    // Hint: Look up the CSS selector to find an input by its "name"
-    // Hint: Use the jQuery method .val() to get the value of an input
-    var searchText = $('input[name=searchText]').val();
-    var lucky = $('input[name=lucky]').is(':checked');
-    var data = { searchText: searchText, lucky: lucky };
-    // TODO: What's the URL of the endpoint we're going to hit?
-    var url = 'http://localhost:3000/search';
+    $button = $(e.target);
+    if ($button.hasClass('btn-success') && !($button.hasClass('getRandom'))){
 
-    console.log(data); // this will be a sanity check to see that we're getting the data
-    $.post(url, data, function(response) {
-      var lectures,
-          output = '';
-
-      // TODO: Get the lectures property from the response object and
-      //       assign it into the lectures variable.
-      if (response.notes && response.notes.constructor === Array) {
-        for (var i = 0; i < response.notes.length; i++) {
-          output += '<li>' + response.notes[i] + '</li>';
-        }
+    } else {
+        clearCourseInfo();
+        clearButtons();
+        $button.addClass('btn-success');
+      switch ($button.attr('data-req')) {
+          case 'labs':
+            getCourseInfo('labs');
+            break;
+          case 'lectures':
+            getCourseInfo('lectures');
+            break;
+          case 'random':
+            $.get('/random', function(data){
+              createContentPanel("#course-content-display",data);
+            });
+            break;
       }
-      output = '<ul>' + output + '</ul>';
+    }
 
-      // TODO: What div are we putting our results into?
-      //       Which variable shows our unordered list?
-      $("#search-results").html(output);
-    });
   });
 
-      // for (var i = 0; i < lectures.length; i++) {
-      //   if (typeof lectures[i].notes === 'object') {
-      //     for (var j = 0; j < lectures[i].notes.length; j++) {
-      //       output += '<li>' + lectures[i].notes[j] + '</li>';
-      //     }
-      //   }
-      // }
+    // click handler for list items created from course info lists
+  $("#course-info-menu").click(function(e){
+    e.preventDefault();
+    var trigger = $(e.target);
+    if (trigger.is('a') ) {
+      $.get(trigger.attr('href'), function(data){
+        createContentPanel("#course-content-display", data);
+      });
+    }
+  });
 
+  // form submit handler
+  $("#search").on("submit", function(e) {
+  // TODO: Prevent the form from submitting the default way.
+    e.preventDefault();
+    // handle style elements
+    clearButtons();
+    clearCourseInfo();
+    $('#course-info-menu').empty();
+    $("#search :button").addClass('btn-success');
 
-  // Done with Code Challenge 1 early? Next steps:
-  // 1. First, use your browser console tools to watch your Ajax
-  //    request and response. Open the "Network" tab and hit the search
-  //    button a few times. Use different values in your search box.
-  // 2. Still want more? Try using a jQuery iterator to loop over the results
-  //    you get back from the server, instead of using a for loop.
+    // check if I feel lucky is clicked
+
+    if ($("#lucky").is(':checked')) {
+        $.get('/ifeellucky',function(data){
+        console.log(data)
+        createContentPanel("#course-content-display", data);
+        $("#course-content-display").prepend('<h2>Did you get lucky?</h2>')
+      });
+    } else {
+      // perform search
+      if ($("#search :text").val().length > 0) {
+        var url = "/search";
+            var data = {"searchText":$("#search :text").val().split(',')};
+            $.post(url, data, function(response) {
+      
+              var searchResultsString = '<div class="panel"><h3 class="panel-header">Search Results</h3>';
+              response.forEach(function(item) {
+                if (item.searchResults === null) {
+                  searchResultsString += '<h4>Your search for "' + item.searchText + '" return no results.</h4>';
+                } else {
+                  searchResultsString += '<h4>Your search for "' + item.searchText + '" return the following results:</h4>'
+                  
+                  item.searchResults.forEach(function(resultItem){
+                    console.log('search text: ' + item.searchText)
+                    var re = new RegExp(item.searchText.trim(), 'i');
+                    searchResultsString += '<h5>' + resultItem.title + ' <small>' + resultItem.topic + '</small></h5>';
+                    var splitNote = resultItem.note.split(' ')
+                    
+                    for (var i = 0; i < splitNote.length; i++ ) {
+                      if (splitNote[i].match(re)){
+                        splitNote[i] = '<mark>' + splitNote[i] + '</mark>';
+                      }
+                    }
+                    
+                    var markedNote = splitNote.join(' ');
+                    searchResultsString += '<p>'+ markedNote + '</p>'
+                  
+                  })
+                  
+                }
+              })
+              searchResultsString += "</div>";
+      
+              $("#course-content-display").html(searchResultsString);
+            });
+          }
+    } 
+  });
+
+/**************************************************************/
+/**************************************************************/
+
+  // helpers
+  function clearButtons() {
+    $('button').removeClass('btn-success').addClass('btn-default');
+  }
+  function clearCourseInfo() {
+    $('#course-content-display').empty();
+    $('#course-info-menu').empty();
+  }
+
+  function getCourseInfo(courseInfoType){
+    $.get('/' + courseInfoType, function(data){
+      $("#course-info-menu").html(makeList(data, courseInfoType));
+    });
+  }
+
+   function makeList(objectArray, type){
+    var outputString = '<ul class="nav nav-pills">';
+    objectArray.forEach(function(obj){
+        outputString += '<li><a href="/' + type + '/' + objectArray.indexOf(obj) + '">' + obj.title + '</a></li>'
+    });
+    outputString += "</ul>"
+    return outputString;
+  }
+  function createContentPanel (enclosingDiv, data) {
+    var outputString = '<div class="panel">'
+    switch (typeof data) {
+      case 'string':
+        outputString += '<h3 class="panel-header">' + data + "</h3><p>-- Master Yoda</p>";
+        $(enclosingDiv).html(outputString);
+        break;
+      case 'object':
+        outputString += '<h3 class="panel-header">' + data.title + " <small>"+data.topic+"</small></h3>";
+        if (data.notes) {
+          outputString += "<ul>"
+          data.notes.forEach(function(note){
+            outputString += "<li>" + note + "</li>"
+          })
+          outputString += "</ul>"
+        }
+        outputString += '</div>'
+        $(enclosingDiv).html(outputString);
+        break;
+    }
+  }
+
+/**************************************************************/
+/**************************************************************/
 
 });
-
-
-
-
