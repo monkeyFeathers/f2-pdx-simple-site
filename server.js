@@ -1,74 +1,71 @@
-var express = require('express');
-
+var express = require("express");
 var app = express();
 var port = process.env.PORT || 3000;
-
-
 var bodyparser = require("body-parser");
+
 app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({extended: true}));
+app.use(bodyparser.urlencoded({ extended: true }));
+app.use(express.static(__dirname + "/app/"));
 
-app.use(express.static(__dirname + '/app/'));
-
-var course = require('./lib/courseInfo');
+var course = require("./lib/courseInfo");
 var f2search = require("./lib/f2search");
-var helpers = require('./lib/helpers');
+var helpers = require("./lib/helpers");
 
-app.get('/', function (req, res) {
+app.get("/", function(req, res) {
   res.sendFile();
 });
 
-app.post('/search', function (req, res) {
-    var searchResults = []; 
-    req.body.searchText.forEach(function(searchText){
+app.post("/search", function(req, res) {
+    var searchResults = [];
+    req.body.searchText.forEach(function(searchText) {
         searchResults.push(f2search(searchText));
     });
     res.json(searchResults);
 });
 
-app.get('/ifeellucky', function (req, res) {
-    res.send(helpers.selectRandomItem(course.getAllNotes()))
+app.get("/ifeellucky", function(req, res) {
+    res.send(helpers.selectRandomItem(course.getAllNotes()));
 });
 
-app.get('/:type', function (req, res){
+app.get("/:type", function(req, res) {
 
     switch (req.params.type) {
-        case 'labs':
+        case "labs":
             res.json(course.labs);
             break;
-        case 'lectures':
+        case "lectures":
             res.json(course.lectures);
             break;
-        case 'random':
-            var responseItem = helpers.getRandomItem()
+        case "random":
+            var responseItem = helpers.getRandomItem();
             switch (typeof responseItem) {
-                case 'string':
+                case "string":
                     res.send(responseItem);
                     break;
-                case 'object':
+                case "object":
                     res.json(responseItem);
-                    break
+                    break;
             }
             break;
         default:
             res.status(404).send("404 not Found");
     }
 });
-app.get('/:type/:id', function (req, res) {
-    switch(req.params.type){
-        case 'labs':
-            res.send(course.labs[req.params.id])
+app.get("/:type/:id", function(req, res) {
+    switch (req.params.type){
+        case "labs":
+            res.send(course.labs[req.params.id]);
             break;
-        case 'lectures':
-            res.send(course.lectures[req.params.id])
+        case "lectures":
+            res.send(course.lectures[req.params.id]);
             break;
         default:
-            res.status(404).send('404 not found');
+            res.status(404).send("404 not found");
     }
 
 });
 
-app.listen(port, function () {
-  console.log('server started on port ' + port + "; Ctrl c to stop.");
+app.listen(port, function() {
+  console.log("server started on port " + port + "; Ctrl c to stop.");
 });
 
